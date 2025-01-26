@@ -34,7 +34,7 @@ go build
 
 ```bash
 chopdoc -input input.txt -output chunks.jsonl -size 1000
-chopdoc -input input.txt -output chunks.jsonl -size 1000 -overlap 100 -strategy word
+chopdoc -input input.txt -output chunks.jsonl -size 1000 -overlap 100
 chopdoc -input input.txt -output chunks.jsonl -size 1000 -overlap 100 -clean aggressive -strategy character
 ```
 
