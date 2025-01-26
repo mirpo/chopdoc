@@ -1,11 +1,14 @@
+VERSION := $(shell git describe --tags --always --dirty)
+COMMIT := $(shell git rev-parse --short HEAD)
+
 install:
 	go mod download
 
 build:
-	go build -o chopdoc ./chopdoc.go
+	CGO_ENABLED=0 go build -ldflags="-w -s -X main.version=${VERSION} -X main.commit=${COMMIT}" -o chopdoc ./chopdoc.go
 
 test: 
 	go test -v ./...
 
 lint:
-	golangci-lint run -v
+	golangci-lint run -v ./
