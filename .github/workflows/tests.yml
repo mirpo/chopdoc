@@ -7,20 +7,27 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  lint-n-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        go-version: ["1.23"]
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version: ${{ matrix.go-version }}
+          cache: true
 
       - name: Install dependencies
         run: make install
 
       - name: golangci-lint
+        if: runner.os != 'Windows'
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.62
@@ -28,3 +35,20 @@ jobs:
 
       - name: Run tests
         run: make test
+
+      - name: Build
+        run: make build
+
+      - name: Execute
+        if: runner.os != 'Windows'
+        run: |
+          time ./chopdoc -input paul_graham_essay.txt -output chunks.jsonl -size 100 -overlap 50
+
+      - name: Execute
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $time = Measure-Command {
+            ./chopdoc -input paul_graham_essay.txt -output chunks.jsonl -size 100 -overlap 50
+          }
+          Write-Host "Execution Time: $($time.TotalSeconds) seconds"
