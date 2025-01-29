@@ -11,7 +11,6 @@ func TestNewConfig(t *testing.T) {
 	assert.Equal(t, 1000, cfg.ChunkSize)
 	assert.Equal(t, CleanNormal, cfg.CleaningMode)
 	assert.Equal(t, 0, cfg.Overlap)
-	assert.False(t, cfg.Stats)
 }
 
 func TestValidate(t *testing.T) {
@@ -25,6 +24,7 @@ func TestValidate(t *testing.T) {
 			cfg: Config{
 				InputFile:  "input.txt",
 				OutputFile: "output.jsonl",
+				Method:     "characters",
 				ChunkSize:  1000,
 				Overlap:    100,
 			},

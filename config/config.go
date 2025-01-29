@@ -5,6 +5,12 @@ import (
 	"path/filepath"
 )
 
+type ChunkMethod string
+
+const (
+	ByCharacters ChunkMethod = "characters"
+)
+
 type CleaningMode string
 
 const (
@@ -16,10 +22,10 @@ const (
 type Config struct {
 	InputFile    string
 	OutputFile   string
+	Method       ChunkMethod
 	ChunkSize    int
 	Overlap      int
 	CleaningMode CleaningMode
-	Stats        bool
 }
 
 func NewConfig() *Config {
@@ -27,7 +33,6 @@ func NewConfig() *Config {
 		ChunkSize:    1000,
 		Overlap:      0,
 		CleaningMode: CleanNormal,
-		Stats:        false,
 	}
 }
 
@@ -46,6 +51,12 @@ func (c *Config) Validate() error {
 	}
 	if filepath.Ext(c.OutputFile) != ".jsonl" {
 		return fmt.Errorf("output file must have .jsonl extension")
+	}
+	validMethods := map[ChunkMethod]bool{
+		ByCharacters: true,
+	}
+	if !validMethods[c.Method] {
+		return fmt.Errorf("invalid method: %s", c.Method)
 	}
 	return nil
 }
