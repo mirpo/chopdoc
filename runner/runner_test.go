@@ -21,19 +21,19 @@ func TestCleanText(t *testing.T) {
 	}{
 		{
 			name:      "clean none",
-			text:      "  test\n\ntext  ",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanNone,
-			want:      "  test\n\ntext  ",
+			want:      " test \n\n\ntext\n\n\n\n more ",
 		},
 		{
 			name:      "clean normal",
-			text:      "test\n\n\ntext\n\n\n\nmore",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanNormal,
-			want:      "test\ntext\nmore",
+			want:      "test \ntext\n more",
 		},
 		{
 			name:      "clean aggressive",
-			text:      "test\n\n text\t\tmore",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanAggressive,
 			want:      "test text more",
 		},
