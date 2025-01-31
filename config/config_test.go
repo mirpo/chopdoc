@@ -24,7 +24,7 @@ func TestValidate(t *testing.T) {
 			cfg: Config{
 				InputFile:  "input.txt",
 				OutputFile: "output.jsonl",
-				Method:     "characters",
+				Method:     "char",
 				ChunkSize:  1000,
 				Overlap:    100,
 			},

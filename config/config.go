@@ -8,7 +8,7 @@ import (
 type ChunkMethod string
 
 const (
-	ByCharacters ChunkMethod = "characters"
+	Char ChunkMethod = "char"
 )
 
 type CleaningMode string
@@ -53,7 +53,7 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("output file must have .jsonl extension")
 	}
 	validMethods := map[ChunkMethod]bool{
-		ByCharacters: true,
+		Char: true,
 	}
 	if !validMethods[c.Method] {
 		return fmt.Errorf("invalid method: %s", c.Method)

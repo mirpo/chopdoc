@@ -16,7 +16,7 @@ func main() {
 	flag.StringVar(&cfg.OutputFile, "output", "", "Output file path (must end with .jsonl)")
 	flag.IntVar(&cfg.ChunkSize, "size", 1000, "Chunk size in characters")
 	flag.IntVar(&cfg.Overlap, "overlap", 0, "Overlap size in characters")
-	method := flag.String("method", string(config.ByCharacters), "Chunking method: characters")
+	method := flag.String("method", string(config.Char), "Default chunking method: char")
 	clean := flag.String("clean", "none", "Cleaning mode: none, normal, aggressive")
 
 	flag.Parse()

@@ -42,13 +42,13 @@ jobs:
       - name: Execute
         if: runner.os != 'Windows'
         run: |
-          time ./chopdoc -input paul_graham_essay.txt -output chunks.jsonl -size 100 -overlap 50
+          time ./chopdoc -input pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
 
       - name: Execute
         if: runner.os == 'Windows'
         shell: powershell
         run: |
           $time = Measure-Command {
-            ./chopdoc -input paul_graham_essay.txt -output chunks.jsonl -size 100 -overlap 50
+            ./chopdoc -input pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
           }
           Write-Host "Execution Time: $($time.TotalSeconds) seconds"
