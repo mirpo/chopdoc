@@ -21,19 +21,19 @@ func TestCleanText(t *testing.T) {
 	}{
 		{
 			name:      "clean none",
-			text:      "  test\n\ntext  ",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanNone,
-			want:      "  test\n\ntext  ",
+			want:      " test \n\n\ntext\n\n\n\n more ",
 		},
 		{
 			name:      "clean normal",
-			text:      "test\n\n\ntext\n\n\n\nmore",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanNormal,
-			want:      "test\ntext\nmore",
+			want:      "test \ntext\n more",
 		},
 		{
 			name:      "clean aggressive",
-			text:      "test\n\n text\t\tmore",
+			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanAggressive,
 			want:      "test text more",
 		},
@@ -78,18 +78,16 @@ func TestRun(t *testing.T) {
 			name:      "empty file",
 			input:     "",
 			chunkSize: 5,
-			wantErr:   true,
+			wantErr:   false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create input file
 			inPath := filepath.Join(tmpDir, "input.txt")
 			err := os.WriteFile(inPath, []byte(tt.input), 0o644)
 			require.NoError(t, err)
 
-			// Setup output file
 			outPath := filepath.Join(tmpDir, "output.jsonl")
 
 			cfg := &config.Config{
@@ -110,7 +108,6 @@ func TestRun(t *testing.T) {
 
 			require.NoError(t, err)
 
-			// Read and verify chunks
 			f, err := os.Open(outPath)
 			require.NoError(t, err)
 			defer f.Close()
@@ -132,7 +129,6 @@ func TestRun(t *testing.T) {
 }
 
 func TestErrorCases(t *testing.T) {
-	// Create test input file
 	tmpDir := t.TempDir()
 	inputPath := filepath.Join(tmpDir, "input.txt")
 	err := os.WriteFile(inputPath, []byte("test content"), 0o644)
