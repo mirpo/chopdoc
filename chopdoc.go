@@ -17,8 +17,8 @@ func main() {
 	flag.IntVar(&cfg.ChunkSize, "size", 1000, "Chunk size in characters")
 	flag.IntVar(&cfg.Overlap, "overlap", 0, "Overlap size in characters")
 	method := flag.String("method", string(config.ByCharacters), "Chunking method: characters")
-
 	clean := flag.String("clean", "none", "Cleaning mode: none, normal, aggressive")
+
 	flag.Parse()
 
 	cfg.CleaningMode = config.CleaningMode(*clean)
