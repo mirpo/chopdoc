@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
+	"github.com/mirpo/chopdoc/cleaner"
 	"github.com/mirpo/chopdoc/config"
 )
 
@@ -25,22 +25,8 @@ func NewRunner(cfg *config.Config) *Runner {
 	}
 }
 
-var (
-	reAggressive          = regexp.MustCompile(`[\p{Z}\p{C}\s]+`)
-	reConsecutiveNewlines = regexp.MustCompile(`\n\s*\n+`)
-)
-
 func (r *Runner) cleanText(text string) string {
-	switch r.cfg.CleaningMode {
-	case config.CleanAggressive:
-		text = reAggressive.ReplaceAllString(text, " ")
-		fallthrough
-	case config.CleanNormal:
-		text = reConsecutiveNewlines.ReplaceAllString(text, "\n")
-		return strings.TrimSpace(text)
-	default:
-		return text
-	}
+	return cleaner.Clean(text, r.cfg.CleaningMode)
 }
 
 func (r *Runner) writeChunk(encoder *json.Encoder, chunk string) error {
