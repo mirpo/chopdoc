@@ -35,19 +35,19 @@ go build
 ```bash
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100
-chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -clean aggressive -strategy char
+chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -clean aggressive --method char
 ```
 
 ### Options
 
-| Option      | Description                                 | Default  |
-| ----------- | ------------------------------------------- | -------- |
-| `-input`    | Input file path                             | Required |
-| `-output`   | Output file path (.jsonl)                   | Required |
-| `-size`     | Chunk size (characters/words/sentences)     | 1000     |
-| `-overlap`  | Overlap between chunks                      | 0        |
-| `-clean`    | Cleaning mode (none/normal/aggressive)      | none     |
-| `-strategy` | Chunking strategy (character/word/sentence) | char     |
+| Option     | Description                               | Default  |
+| ---------- | ----------------------------------------- | -------- |
+| `-input`   | Input file path                           | Required |
+| `-output`  | Output file path (.jsonl)                 | Required |
+| `-size`    | Chunk size (characters/words/sentences)   | 1000     |
+| `-overlap` | Overlap between chunks                    | 0        |
+| `-clean`   | Cleaning mode (none/normal/aggressive)    | none     |
+| `-method`  | Chunking method (character/word/sentence) | char     |
 
 ### Output Format
 
