@@ -1,4 +1,3 @@
-// runner/runner_test.go
 package runner
 
 import (
@@ -7,12 +6,13 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mirpo/chopdoc/chopper"
 	"github.com/mirpo/chopdoc/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestRun(t *testing.T) {
+func TestChar(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	tests := []struct {
@@ -60,6 +60,7 @@ func TestRun(t *testing.T) {
 				ChunkSize:    tt.chunkSize,
 				Overlap:      tt.overlap,
 				CleaningMode: tt.cleanMode,
+				Method:       config.Char,
 			}
 
 			r := NewRunner(cfg)
@@ -76,10 +77,10 @@ func TestRun(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var chunks []Chunk
+			var chunks []chopper.Chunk
 			dec := json.NewDecoder(f)
 			for dec.More() {
-				var chunk Chunk
+				var chunk chopper.Chunk
 				require.NoError(t, dec.Decode(&chunk))
 				chunks = append(chunks, chunk)
 			}
