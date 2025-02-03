@@ -11,4 +11,5 @@ test:
 	go test -v ./...
 
 lint:
-	golangci-lint run -v ./
+	which golangci-lint
+	golangci-lint run --verbose

@@ -12,14 +12,13 @@ type CharChopper struct {
 }
 
 func NewCharChopper(cfg *config.Config, rw *bufio.ReadWriter) *CharChopper {
-	encoder := json.NewEncoder(rw.Writer)
 	scanner := bufio.NewScanner(rw.Reader)
 	scanner.Split(bufio.ScanBytes)
 
 	return &CharChopper{
 		BaseChopper: BaseChopper{
 			cfg:     cfg,
-			encoder: encoder,
+			encoder: json.NewEncoder(rw.Writer),
 			scanner: scanner,
 		},
 	}
@@ -36,7 +35,12 @@ func (c *CharChopper) scanInput() error {
 			if err := c.writeChunk(chunk); err != nil {
 				return err
 			}
-			chunk = chunk[step:]
+
+			if step > len(chunk) {
+				chunk = ""
+			} else {
+				chunk = chunk[step:]
+			}
 		}
 	}
 
@@ -47,6 +51,6 @@ func (c *CharChopper) scanInput() error {
 	return c.scanner.Err()
 }
 
-func (с *CharChopper) Chop() error {
-	return с.scanInput()
+func (c *CharChopper) Chop() error {
+	return c.scanInput()
 }

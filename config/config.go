@@ -9,6 +9,7 @@ type ChunkMethod string
 
 const (
 	Char ChunkMethod = "char"
+	Word ChunkMethod = "word"
 )
 
 type CleaningMode string
@@ -54,6 +55,7 @@ func (c *Config) Validate() error {
 	}
 	validMethods := map[ChunkMethod]bool{
 		Char: true,
+		Word: true,
 	}
 	if !validMethods[c.Method] {
 		return fmt.Errorf("invalid method: %s", c.Method)
