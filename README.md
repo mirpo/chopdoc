@@ -33,11 +33,11 @@ go build
 ## Usage
 
 ```bash
-chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000
+chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -clean aggressive
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -method char -clean aggressive
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -method word
-chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 0   -method word -max-length 10
+chopdoc -input pg_essay.txt -output chunks.jsonl -size 10   -overlap 1   -method sentence
 ```
 
 ### Options
