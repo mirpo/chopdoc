@@ -93,6 +93,92 @@ func TestChar(t *testing.T) {
 	}
 }
 
+func TestWord(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	tests := []struct {
+		name       string
+		input      string
+		chunkSize  int
+		overlap    int
+		cleanMode  config.CleaningMode
+		wantChunks []string
+		wantErr    bool
+	}{
+		{
+			name:      "basic chunking",
+			input:     "one two three four five six seven eight nine ten.",
+			chunkSize: 3,
+			overlap:   0,
+			wantChunks: []string{
+				"one two three",
+				"four five six",
+				"seven eight nine",
+				"ten.",
+			},
+		},
+		{
+			name:      "with overlap",
+			input:     "one two three four five six seven eight nine ten.",
+			chunkSize: 3,
+			overlap:   1,
+			wantChunks: []string{
+				"one two three",
+				"three four five",
+				"five six seven",
+				"seven eight nine",
+				"nine ten.",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			inPath := filepath.Join(tmpDir, "input.txt")
+			err := os.WriteFile(inPath, []byte(tt.input), 0o644)
+			require.NoError(t, err)
+
+			outPath := filepath.Join(tmpDir, "output.jsonl")
+
+			cfg := &config.Config{
+				InputFile:    inPath,
+				OutputFile:   outPath,
+				ChunkSize:    tt.chunkSize,
+				Overlap:      tt.overlap,
+				CleaningMode: tt.cleanMode,
+				Method:       config.Word,
+			}
+
+			r := NewRunner(cfg)
+			err = r.Run()
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+
+			f, err := os.Open(outPath)
+			require.NoError(t, err)
+			defer f.Close()
+
+			var chunks []chopper.Chunk
+			dec := json.NewDecoder(f)
+			for dec.More() {
+				var chunk chopper.Chunk
+				require.NoError(t, dec.Decode(&chunk))
+				chunks = append(chunks, chunk)
+			}
+
+			assert.Equal(t, len(tt.wantChunks), len(chunks))
+			for i, want := range tt.wantChunks {
+				assert.Equal(t, want, chunks[i].Text)
+			}
+		})
+	}
+}
+
 func TestErrorCases(t *testing.T) {
 	tmpDir := t.TempDir()
 	inputPath := filepath.Join(tmpDir, "input.txt")
