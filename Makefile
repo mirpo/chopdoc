@@ -13,3 +13,6 @@ test:
 lint:
 	which golangci-lint
 	golangci-lint run --verbose
+
+release-draft:
+	goreleaser release --snapshot --draft
