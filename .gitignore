@@ -27,3 +27,4 @@ go.work.sum
 *.jsonl
 chopdoc
 dist/
+.DS_Store
