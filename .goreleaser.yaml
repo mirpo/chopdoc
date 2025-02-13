@@ -1,14 +1,10 @@
-project_name: chopdoc
-
 version: 2
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - id: "chopdoc"
-    binary: "chopdoc"
-    env:
+  - env:
       - GO111MODULE=on
       - CGO_ENABLED=0
     flags:
@@ -19,10 +15,8 @@ builds:
       - "-s"
       # Omit the DWARF symbol table.
       - "-w"
-      - "-X main.Version={{ .Version }}"
-      - "-X main.Commit={{ .ShortCommit }}"
-      - "-X main.CommitDate={{ .CommitDate }}"
-      - "-X main.TreeState={{ .GitTreeState }}"
+      - "-X main.version={{ .Version }}"
+      - "-X main.commit={{ .ShortCommit }}"
     goos:
       - linux
       - windows
@@ -33,22 +27,35 @@ builds:
     main: "./chopdoc.go"
 
 archives:
-  - format: "binary"
-    id: "binary"
+  - format: tar.gz
+    files:
+      - README.md
+      - LICENSE.txt
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+release:
+  prerelease: auto
+
+source:
+  enabled: true
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
 
 brews:
-  - name: "chopdoc"
-    ids:
-      - "binary"
-    repository:
+  - repository:
       owner: "mirpo"
       name: "homebrew-tools"
-      branch: "main"
       token: "{{ .Env.GITHUB_TOKEN }}"
     commit_author:
-      name: mirpo
-      email: 7105861+mirpo@users.noreply.github.com
+      name: "Miroslav Pokrovskii"
+      email: "miroslavpokrovksiy@gmail.com"
     homepage: "https://github.com/mirpo/chopdoc"
     description: "A tool to split documents into chunks for RAG and LLM applications"
-    license: "MIT"
