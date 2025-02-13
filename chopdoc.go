@@ -9,9 +9,16 @@ import (
 	"github.com/mirpo/chopdoc/runner"
 )
 
+var (
+	version string = "version"
+	commit  string = "commit"
+)
+
 func main() {
 	cfg := config.NewConfig()
 
+	var ver bool
+	flag.BoolVar(&ver, "version", false, "Get current version of sentences")
 	flag.StringVar(&cfg.InputFile, "input", "", "Input file path")
 	flag.StringVar(&cfg.OutputFile, "output", "", "Output file path (must end with .jsonl)")
 	flag.IntVar(&cfg.ChunkSize, "size", 1000, "Chunk size in characters")
@@ -20,6 +27,11 @@ func main() {
 	clean := flag.String("clean", "none", "Cleaning mode: none, normal, aggressive")
 
 	flag.Parse()
+
+	if ver {
+		fmt.Printf("version: %s, commit: %s", version, commit)
+		return
+	}
 
 	cfg.CleaningMode = config.CleaningMode(*clean)
 	cfg.Method = config.ChunkMethod(*method)
