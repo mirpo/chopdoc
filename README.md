@@ -11,20 +11,19 @@ A command-line tool for splitting documents into chunks, optimized for RAG (Retr
 
 ## Installation
 
-### Global Installation
-```bash
-git clone https://github.com/mirpo/chopdoc.git
-cd chopdoc
-make install
+[Homebrew](https://brew.sh/):
+```shell
+brew tap mirpo/homebrew-tools
+brew install chopdoc
 ```
 
 Or using Go:
-```bash
+```shell
 go install github.com/mirpo/chopdoc@latest
 ```
 
 ### Local Build
-```bash
+```shell
 git clone https://github.com/mirpo/chopdoc.git
 cd chopdoc
 go build
