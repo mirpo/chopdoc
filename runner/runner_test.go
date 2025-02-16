@@ -1,7 +1,10 @@
 package runner
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -302,6 +305,77 @@ func TestSentence(t *testing.T) {
 			for i, want := range tt.wantChunks {
 				assert.Equal(t, want, chunks[i].Text)
 			}
+		})
+	}
+}
+
+func captureOutput(f func()) string {
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	f()
+
+	w.Close()
+	os.Stdout = old
+
+	var buf bytes.Buffer
+	_, _ = io.Copy(&buf, r)
+	fmt.Print("")
+	return buf.String()
+}
+
+func TestPiped(t *testing.T) {
+	tests := []struct {
+		name                string
+		input               string
+		chunkSize           int
+		overlap             int
+		expectedPipedOutput string
+		wantErr             bool
+	}{
+		{
+			name:                "basic chunking one",
+			input:               "basic chunking one.   chunking two? chunking three!.",
+			chunkSize:           1,
+			overlap:             0,
+			expectedPipedOutput: "{\"chunk\":\"basic chunking one.\"}\n{\"chunk\":\"chunking two?\"}\n{\"chunk\":\"chunking three!.\"}\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldStdin := os.Stdin
+			defer func() { os.Stdin = oldStdin }()
+
+			r, w, _ := os.Pipe()
+			os.Stdin = r
+
+			cfg := &config.Config{
+				ChunkSize: tt.chunkSize,
+				Overlap:   tt.overlap,
+				Method:    config.Sentence,
+				Piped:     true,
+			}
+			testInput := tt.input
+			go func() {
+				_, _ = w.Write([]byte(testInput))
+				w.Close()
+			}()
+			var err error
+
+			runner := NewRunner(cfg)
+			output := captureOutput(func() {
+				err = runner.Run()
+				if tt.wantErr {
+					assert.Error(t, err)
+					return
+				}
+			})
+
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expectedPipedOutput, output)
 		})
 	}
 }

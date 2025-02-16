@@ -28,6 +28,7 @@ type Config struct {
 	ChunkSize    int
 	Overlap      int
 	CleaningMode CleaningMode
+	Piped        bool
 }
 
 func NewConfig() *Config {
@@ -35,15 +36,19 @@ func NewConfig() *Config {
 		ChunkSize:    1000,
 		Overlap:      0,
 		CleaningMode: CleanNormal,
+		Piped:        false,
 	}
 }
 
 func (c *Config) Validate() error {
-	if c.InputFile == "" {
-		return fmt.Errorf("input file is required")
+	if !c.Piped {
+		if c.InputFile == "" {
+			return fmt.Errorf("input file is required")
+		}
 	}
-	if c.OutputFile == "" {
-		return fmt.Errorf("output file is required")
+
+	if c.OutputFile != "" && filepath.Ext(c.OutputFile) != ".jsonl" {
+		return fmt.Errorf("output file must have .jsonl extension")
 	}
 	if c.ChunkSize <= 0 {
 		return fmt.Errorf("chunk size must be greater than 0")
@@ -51,16 +56,13 @@ func (c *Config) Validate() error {
 	if c.Overlap >= c.ChunkSize {
 		return fmt.Errorf("overlap must be less than chunk size")
 	}
-	if filepath.Ext(c.OutputFile) != ".jsonl" {
-		return fmt.Errorf("output file must have .jsonl extension")
-	}
 	validMethods := map[ChunkMethod]bool{
 		Char:     true,
 		Word:     true,
 		Sentence: true,
 	}
 	if !validMethods[c.Method] {
-		return fmt.Errorf("invalid method: %s", c.Method)
+		return fmt.Errorf("invalid chunking method: %s", c.Method)
 	}
 	return nil
 }
