@@ -20,15 +20,27 @@ func NewRunner(cfg *config.Config) *Runner {
 }
 
 func (r *Runner) Run() error {
-	input, err := os.Open(r.cfg.InputFile)
-	if err != nil {
-		return fmt.Errorf("failed to open input file: %w", err)
+	var input *os.File
+	var err error
+
+	if r.cfg.Piped {
+		input = os.Stdin
+	} else {
+		input, err = os.Open(r.cfg.InputFile)
+		if err != nil {
+			return fmt.Errorf("failed to open input file: %w", err)
+		}
 	}
 	defer input.Close()
 
-	output, err := os.Create(r.cfg.OutputFile)
-	if err != nil {
-		return fmt.Errorf("failed to create output file: %w", err)
+	var output *os.File
+	if r.cfg.OutputFile != "" {
+		output, err = os.Create(r.cfg.OutputFile)
+		if err != nil {
+			return fmt.Errorf("failed to create output file: %w", err)
+		}
+	} else {
+		output = os.Stdout
 	}
 	defer output.Close()
 

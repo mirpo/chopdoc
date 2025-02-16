@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	version string = "version"
+	version string = "dev-build"
 	commit  string = "commit"
 )
 
@@ -33,6 +33,12 @@ func main() {
 		return
 	}
 
+	fi, err := os.Stdin.Stat()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	cfg.Piped = (fi.Mode() & os.ModeNamedPipe) != 0
 	cfg.CleaningMode = config.CleaningMode(*clean)
 	cfg.Method = config.ChunkMethod(*method)
 

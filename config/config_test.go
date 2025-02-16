@@ -11,6 +11,7 @@ func TestNewConfig(t *testing.T) {
 	assert.Equal(t, 1000, cfg.ChunkSize)
 	assert.Equal(t, CleanNormal, cfg.CleaningMode)
 	assert.Equal(t, 0, cfg.Overlap)
+	assert.Equal(t, false, cfg.Piped)
 }
 
 func TestValidate(t *testing.T) {
@@ -24,7 +25,7 @@ func TestValidate(t *testing.T) {
 			cfg: Config{
 				InputFile:  "input.txt",
 				OutputFile: "output.jsonl",
-				Method:     "char",
+				Method:     Char,
 				ChunkSize:  1000,
 				Overlap:    100,
 			},
@@ -38,12 +39,31 @@ func TestValidate(t *testing.T) {
 			wantErr: "input file is required",
 		},
 		{
-			name: "missing output",
+			name: "input can be empty when piped",
+			cfg: Config{
+				Piped:      true,
+				OutputFile: "",
+				ChunkSize:  1000,
+				Method:     Char,
+			},
+		},
+		{
+			name: "empty output is allowed",
 			cfg: Config{
 				InputFile: "input.txt",
 				ChunkSize: 1000,
+				Method:    Char,
 			},
-			wantErr: "output file is required",
+		},
+		{
+			name: "non empty output must include jsonl",
+			cfg: Config{
+				Piped:      true,
+				OutputFile: "output.json",
+				ChunkSize:  1000,
+				Method:     Char,
+			},
+			wantErr: "output file must have .jsonl extension",
 		},
 		{
 			name: "invalid chunk size",
