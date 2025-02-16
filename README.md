@@ -39,6 +39,13 @@ chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -method
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 10   -overlap 1   -method sentence
 ```
 
+chopdoc can be piped:
+```bash
+cat pg_essay.txt | chopdoc -size 1 -method sentence
+cat pg_essay.txt | chopdoc -size 1 -method sentence > piped.jsonl
+cat pg_essay.txt | chopdoc -size 1 -method sentence -output output_as_arg.jsonl
+```
+
 ### Options
 
 | Option     | Description                               | Default  |
