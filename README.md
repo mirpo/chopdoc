@@ -3,11 +3,11 @@
 A command-line tool for splitting documents into chunks, optimized for RAG (Retrieval-Augmented Generation) and LLM applications.
 
 ## Features
-- Supports chunking text files into configurable sizes
+- Supports chunking methods: characters, words, sentences, recursive
 - Configurable chunk size and overlap
 - Text cleaning and normalization
 - JSONL output format
-- Support for plain text files (with Markdown, PDF planned)
+- Supported formats: txt (plain test)
 
 ## Installation
 
@@ -17,7 +17,7 @@ brew tap mirpo/homebrew-tools
 brew install chopdoc
 ```
 
-Or using Go:
+Using `go install`:
 ```shell
 go install github.com/mirpo/chopdoc@latest
 ```
@@ -26,7 +26,7 @@ go install github.com/mirpo/chopdoc@latest
 ```shell
 git clone https://github.com/mirpo/chopdoc.git
 cd chopdoc
-go build
+make build
 ```
 
 ## Usage
@@ -37,6 +37,7 @@ chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -method char -clean aggressive
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 1000 -overlap 100 -method word
 chopdoc -input pg_essay.txt -output chunks.jsonl -size 10   -overlap 1   -method sentence
+chopdoc -input pg_essay.txt -output chunks.jsonl -size 100  -overlap 0   -method recursive
 ```
 
 chopdoc can be piped:
@@ -48,14 +49,14 @@ cat pg_essay.txt | chopdoc -size 1 -method sentence -output output_as_arg.jsonl
 
 ### Options
 
-| Option     | Description                               | Default  |
-| ---------- | ----------------------------------------- | -------- |
-| `-input`   | Input file path                           | Required |
-| `-output`  | Output file path (.jsonl)                 | Required |
-| `-size`    | Chunk size (characters/words/sentences)   | 1000     |
-| `-overlap` | Overlap between chunks                    | 0        |
-| `-clean`   | Cleaning mode (none/normal/aggressive)    | none     |
-| `-method`  | Chunking method (character/word/sentence) | char     |
+| Option     | Description                            | Default  |
+| ---------- | -------------------------------------- | -------- |
+| `-input`   | Input file path                        | Required |
+| `-output`  | Output file path (.jsonl)              | Required |
+| `-size`    | Chunk size                             | 1000     |
+| `-overlap` | Overlap between chunks                 | 0        |
+| `-clean`   | Cleaning mode (none/normal/aggressive) | none     |
+| `-method`  | Chunking method                        | char     |
 
 ### Output Format
 

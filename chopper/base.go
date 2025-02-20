@@ -21,6 +21,7 @@ func (b *BaseChopper) cleanChunk(chunk string) string {
 }
 
 func (b *BaseChopper) writeChunk(chunk string) error {
+	b.encoder.SetEscapeHTML(false)
 	chunk = b.cleanChunk(chunk)
 
 	if len(strings.TrimSpace(chunk)) == 0 {

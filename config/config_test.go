@@ -9,7 +9,7 @@ import (
 func TestNewConfig(t *testing.T) {
 	cfg := NewConfig()
 	assert.Equal(t, 1000, cfg.ChunkSize)
-	assert.Equal(t, CleanNormal, cfg.CleaningMode)
+	assert.Equal(t, CleanNone, cfg.CleaningMode)
 	assert.Equal(t, 0, cfg.Overlap)
 	assert.Equal(t, false, cfg.Piped)
 }

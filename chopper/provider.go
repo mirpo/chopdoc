@@ -23,6 +23,8 @@ func NewChopper(chunkMethod config.ChunkMethod, cfg *config.Config, rw *bufio.Re
 		return NewWordChopper(cfg, rw), nil
 	case config.Sentence:
 		return NewSentenceChopper(cfg, rw), nil
+	case config.Recursive:
+		return NewRecursiveChopper(cfg, rw), nil
 	default:
 		return nil, fmt.Errorf("unsupported chunkMethod: %s", chunkMethod)
 	}

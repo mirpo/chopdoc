@@ -19,8 +19,8 @@ func Clean(chunk string, cleaningMode config.CleaningMode) string {
 		fallthrough
 	case config.CleanNormal:
 		chunk = consecutiveNewlines.ReplaceAllString(chunk, "\n")
-		return strings.TrimSpace(chunk)
+		fallthrough
 	default:
-		return chunk
+		return strings.TrimSpace(chunk)
 	}
 }

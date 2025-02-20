@@ -16,3 +16,8 @@ lint:
 
 release-draft:
 	goreleaser release --snapshot --draft
+
+compare:
+	go run ./chopdoc.go -input ./tests/pg_essay.txt -output ./recursive_60_0_go.jsonl -size 60 -overlap 0 -method recursive
+	(cd tests && uv run ./recursive.py --size 60 --overlap 0 --input ./pg_essay.txt --output ../recursive_60_0_py.jsonl)
+	./scripts/diff.sh ./recursive_60_0_py.jsonl ./recursive_60_0_go.jsonl
