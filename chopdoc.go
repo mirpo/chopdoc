@@ -33,12 +33,12 @@ func main() {
 		return
 	}
 
-	fi, err := os.Stdin.Stat()
-	if err != nil {
-		slog.Error("failed to Stdin.Stat", "err", err)
-		os.Exit(1)
-	}
-	cfg.Piped = (fi.Mode() & os.ModeNamedPipe) != 0
+	// fi, err := os.Stdin.Stat()
+	// if err != nil {
+	// 	slog.Error("failed to Stdin.Stat", "err", err)
+	// 	os.Exit(1)
+	// }
+	cfg.Piped = false
 	cfg.CleaningMode = config.CleaningMode(*clean)
 	cfg.Method = config.ChunkMethod(*method)
 

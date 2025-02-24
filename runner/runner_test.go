@@ -378,11 +378,12 @@ func TestRecursive(t *testing.T) {
 			outPath := filepath.Join(tmpDir, "output.jsonl")
 
 			cfg := &config.Config{
-				InputFile:  inPath,
-				OutputFile: outPath,
-				ChunkSize:  tt.chunkSize,
-				Overlap:    tt.overlap,
-				Method:     config.Recursive,
+				InputFile:    inPath,
+				OutputFile:   outPath,
+				ChunkSize:    tt.chunkSize,
+				Overlap:      tt.overlap,
+				Method:       config.Recursive,
+				CleaningMode: config.CleanTrim,
 			}
 
 			r := NewRunner(cfg)

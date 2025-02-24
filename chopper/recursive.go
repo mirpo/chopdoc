@@ -2,6 +2,7 @@ package chopper
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"io"
 	"strings"
@@ -10,13 +11,11 @@ import (
 )
 
 const (
-	defaultBufferSize    = 64 * 1024
+	defaultBufferSize    = 1024
 	bufferSizeMultiplier = 1
 )
 
-var (
-	defaultSeparators = []string{"\n\n", "\n", " ", ".", ",", ""}
-)
+var defaultSeparators = []string{"\n\n", "\n", " ", ".", ",", ""}
 
 type RecursiveChopper struct {
 	BaseChopper
@@ -43,7 +42,8 @@ func (r *RecursiveChopper) scanInput() error {
 			return err
 		}
 
-		r.buffer.Write(chunk)
+		normalizedChunk := bytes.ReplaceAll(chunk, []byte("\r\n"), []byte("\n"))
+		r.buffer.Write(normalizedChunk)
 
 		if r.buffer.Len() >= r.cfg.ChunkSize*bufferSizeMultiplier || err == io.EOF {
 			if err := r.processBuffer(); err != nil {
