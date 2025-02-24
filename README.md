@@ -7,7 +7,7 @@ A command-line tool for splitting documents into chunks, optimized for RAG (Retr
 - Configurable chunk size and overlap
 - Text cleaning and normalization
 - JSONL output format
-- Supported formats: txt (plain test)
+- Supported formats: txt (or any plain text)
 
 ## Installation
 

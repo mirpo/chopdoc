@@ -14,6 +14,8 @@ var (
 
 func Clean(chunk string, cleaningMode config.CleaningMode) string {
 	switch cleaningMode {
+	case config.CleanNone:
+		return chunk
 	case config.CleanAggressive:
 		chunk = aggressive.ReplaceAllString(chunk, " ")
 		fallthrough
