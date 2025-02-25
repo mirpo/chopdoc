@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/mirpo/chopdoc/config"
@@ -29,13 +29,13 @@ func main() {
 	flag.Parse()
 
 	if ver {
-		fmt.Printf("version: %s, commit: %s", version, commit)
+		slog.Info("chopdoc", "version", version, "commit", commit)
 		return
 	}
 
 	fi, err := os.Stdin.Stat()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		slog.Error("failed to Stdin.Stat", "err", err)
 		os.Exit(1)
 	}
 	cfg.Piped = (fi.Mode() & os.ModeNamedPipe) != 0
@@ -43,13 +43,13 @@ func main() {
 	cfg.Method = config.ChunkMethod(*method)
 
 	if err := cfg.Validate(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		slog.Error("failed to validate config", "err", err)
 		os.Exit(1)
 	}
 
 	r := runner.NewRunner(cfg)
 	if err := r.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		slog.Error("execution error", "err", err)
 		os.Exit(1)
 	}
 }
