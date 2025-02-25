@@ -42,13 +42,24 @@ jobs:
       - name: Execute
         if: runner.os != 'Windows'
         run: |
-          time ./chopdoc -input pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
+          time ./chopdoc -input ./tests/pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
 
       - name: Execute
         if: runner.os == 'Windows'
         shell: powershell
         run: |
           $time = Measure-Command {
-            ./chopdoc -input pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
+            ./chopdoc -input ./tests/pg_essay.txt -output chunks.jsonl -size 100 -overlap 50
           }
           Write-Host "Execution Time: $($time.TotalSeconds) seconds"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        working-directory: ./tests
+        run: uv python install
+
+      - name: Compare results
+        shell: bash
+        run: make compare

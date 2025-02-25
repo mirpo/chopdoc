@@ -8,9 +8,10 @@ import (
 type ChunkMethod string
 
 const (
-	Char     ChunkMethod = "char"
-	Word     ChunkMethod = "word"
-	Sentence ChunkMethod = "sentence"
+	Char      ChunkMethod = "char"
+	Word      ChunkMethod = "word"
+	Sentence  ChunkMethod = "sentence"
+	Recursive ChunkMethod = "recursive"
 )
 
 type CleaningMode string
@@ -18,6 +19,7 @@ type CleaningMode string
 const (
 	CleanNormal     CleaningMode = "normal"
 	CleanAggressive CleaningMode = "aggressive"
+	CleanTrim       CleaningMode = "trim"
 	CleanNone       CleaningMode = "none"
 )
 
@@ -35,7 +37,7 @@ func NewConfig() *Config {
 	return &Config{
 		ChunkSize:    1000,
 		Overlap:      0,
-		CleaningMode: CleanNormal,
+		CleaningMode: CleanNone,
 		Piped:        false,
 	}
 }
@@ -57,12 +59,21 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("overlap must be less than chunk size")
 	}
 	validMethods := map[ChunkMethod]bool{
-		Char:     true,
-		Word:     true,
-		Sentence: true,
+		Char:      true,
+		Word:      true,
+		Sentence:  true,
+		Recursive: true,
 	}
 	if !validMethods[c.Method] {
 		return fmt.Errorf("invalid chunking method: '%s'", c.Method)
+	}
+	if c.Method == Recursive && c.CleaningMode != CleanTrim {
+		fmt.Print("warning: set CleaningMode to None, as all line breaks are required for better recursive split.")
+		c.CleaningMode = CleanTrim
+	}
+	if c.Method == Recursive && c.Overlap != 0 {
+		fmt.Print("warning: currently Recursive split doesn't support overlap, set overlap to 0")
+		c.Overlap = 0
 	}
 	return nil
 }

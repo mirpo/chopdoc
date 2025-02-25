@@ -97,11 +97,12 @@ func TestChar(t *testing.T) {
 			outPath := filepath.Join(tmpDir, "output.jsonl")
 
 			cfg := &config.Config{
-				InputFile:  inPath,
-				OutputFile: outPath,
-				ChunkSize:  tt.chunkSize,
-				Overlap:    tt.overlap,
-				Method:     config.Char,
+				InputFile:    inPath,
+				OutputFile:   outPath,
+				ChunkSize:    tt.chunkSize,
+				Overlap:      tt.overlap,
+				Method:       config.Char,
+				CleaningMode: config.CleanNone,
 			}
 
 			r := NewRunner(cfg)
@@ -277,6 +278,112 @@ func TestSentence(t *testing.T) {
 				ChunkSize:  tt.chunkSize,
 				Overlap:    tt.overlap,
 				Method:     config.Sentence,
+			}
+
+			r := NewRunner(cfg)
+			err = r.Run()
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+
+			f, err := os.Open(outPath)
+			require.NoError(t, err)
+			defer f.Close()
+
+			var chunks []chopper.Chunk
+			dec := json.NewDecoder(f)
+			for dec.More() {
+				var chunk chopper.Chunk
+				require.NoError(t, dec.Decode(&chunk))
+				chunks = append(chunks, chunk)
+			}
+
+			assert.Equal(t, len(tt.wantChunks), len(chunks))
+			for i, want := range tt.wantChunks {
+				assert.Equal(t, want, chunks[i].Text)
+			}
+		})
+	}
+}
+
+func TestRecursive(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	tests := []struct {
+		name       string
+		input      string
+		chunkSize  int
+		overlap    int
+		wantChunks []string
+		wantErr    bool
+	}{
+		{
+			name:      "basic chunking one",
+			input:     "basic chunking one.   chunking two? chunking three!.",
+			chunkSize: 20,
+			overlap:   0,
+			wantChunks: []string{
+				"basic chunking one.",
+				"chunking two?",
+				"chunking three!.",
+			},
+		},
+		{
+			name: "basic chunking two",
+			input: `basic chunking one.
+			
+			chunking two?
+			chunking three!.
+			
+			
+			chunking four!.`,
+			chunkSize: 20,
+			overlap:   0,
+			wantChunks: []string{
+				"basic chunking one.",
+				"chunking two?",
+				"chunking three!.",
+				"chunking four!.",
+			},
+		},
+		{
+			name: "basic chunking three",
+			input: `basic chunking one.
+			
+			chunking two?
+			chunking three!.
+			
+			
+			chunking four!.`,
+			chunkSize: 50,
+			overlap:   0,
+			wantChunks: []string{
+				"basic chunking one.\n\t\t\t\n\t\t\tchunking two?",
+				"chunking three!.",
+				"chunking four!.",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			inPath := filepath.Join(tmpDir, "input.txt")
+			err := os.WriteFile(inPath, []byte(tt.input), 0o644)
+			require.NoError(t, err)
+
+			outPath := filepath.Join(tmpDir, "output.jsonl")
+
+			cfg := &config.Config{
+				InputFile:    inPath,
+				OutputFile:   outPath,
+				ChunkSize:    tt.chunkSize,
+				Overlap:      tt.overlap,
+				Method:       config.Recursive,
+				CleaningMode: config.CleanTrim,
 			}
 
 			r := NewRunner(cfg)
