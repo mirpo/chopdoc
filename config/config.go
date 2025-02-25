@@ -62,7 +62,7 @@ func (c *Config) Validate() error {
 		Sentence: true,
 	}
 	if !validMethods[c.Method] {
-		return fmt.Errorf("invalid chunking method: %s", c.Method)
+		return fmt.Errorf("invalid chunking method: '%s'", c.Method)
 	}
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/mirpo/chopdoc/chopper"
 	"github.com/mirpo/chopdoc/config"
@@ -26,7 +27,11 @@ func (r *Runner) Run() error {
 	if r.cfg.Piped {
 		input = os.Stdin
 	} else {
-		input, err = os.Open(r.cfg.InputFile)
+		absPath, err := filepath.Abs(r.cfg.InputFile)
+		if err != nil {
+			return err
+		}
+		input, err = os.Open(absPath)
 		if err != nil {
 			return fmt.Errorf("failed to open input file: %w", err)
 		}
@@ -35,7 +40,11 @@ func (r *Runner) Run() error {
 
 	var output *os.File
 	if r.cfg.OutputFile != "" {
-		output, err = os.Create(r.cfg.OutputFile)
+		absPath, err := filepath.Abs(r.cfg.OutputFile)
+		if err != nil {
+			return err
+		}
+		output, err = os.Create(absPath)
 		if err != nil {
 			return fmt.Errorf("failed to create output file: %w", err)
 		}
