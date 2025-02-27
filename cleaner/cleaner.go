@@ -8,22 +8,21 @@ import (
 )
 
 var (
-	aggressive          = regexp.MustCompile(`[\p{Z}\p{C}\s]+`)
+	whitespaceCollapse  = regexp.MustCompile(`\s+`)
 	consecutiveNewlines = regexp.MustCompile(`\n\s*\n+`)
 )
 
 func Clean(chunk string, cleaningMode config.CleaningMode) string {
 	switch cleaningMode {
 	case config.CleanAggressive:
-		chunk = aggressive.ReplaceAllString(chunk, " ")
-		fallthrough
+		chunk = whitespaceCollapse.ReplaceAllString(chunk, " ")
+		chunk = consecutiveNewlines.ReplaceAllString(chunk, "\n")
+		chunk = strings.TrimSpace(chunk)
 	case config.CleanNormal:
 		chunk = consecutiveNewlines.ReplaceAllString(chunk, "\n")
-		fallthrough
+		chunk = strings.TrimSpace(chunk)
 	case config.CleanTrim:
 		chunk = strings.TrimSpace(chunk)
-		fallthrough
-	default:
-		return chunk
 	}
+	return chunk
 }
