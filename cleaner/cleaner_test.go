@@ -21,6 +21,12 @@ func TestCleanText(t *testing.T) {
 			want:      " test \n\n\ntext\n\n\n\n more ",
 		},
 		{
+			name:      "clean trim",
+			text:      "   test   ",
+			cleanMode: config.CleanTrim,
+			want:      "test",
+		},
+		{
 			name:      "clean normal",
 			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanNormal,
@@ -31,6 +37,18 @@ func TestCleanText(t *testing.T) {
 			text:      " test \n\n\ntext\n\n\n\n more ",
 			cleanMode: config.CleanAggressive,
 			want:      "test text more",
+		},
+		{
+			name:      "empty string",
+			text:      "",
+			cleanMode: config.CleanAggressive,
+			want:      "",
+		},
+		{
+			name:      "only whitespace",
+			text:      "   \n \t   \n\n   ",
+			cleanMode: config.CleanAggressive,
+			want:      "",
 		},
 	}
 

@@ -63,3 +63,7 @@ jobs:
       - name: Compare results
         shell: bash
         run: make compare
+
+      - name: Run piped
+        shell: bash
+        run: make pipe
