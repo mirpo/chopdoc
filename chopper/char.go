@@ -13,7 +13,7 @@ type CharChopper struct {
 
 func NewCharChopper(cfg *config.Config, rw *bufio.ReadWriter) *CharChopper {
 	scanner := bufio.NewScanner(rw.Reader)
-	scanner.Split(bufio.ScanBytes)
+	scanner.Split(bufio.ScanRunes)
 
 	return &CharChopper{
 		BaseChopper: BaseChopper{
