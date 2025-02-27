@@ -20,6 +20,7 @@ release-draft:
 	goreleaser release --snapshot --draft
 
 compare: 
+	cat ./tests/pg_essay.txt | go run ./chopdoc.go
 	# size 60, overlap 0
 	go run ./chopdoc.go -input ./tests/pg_essay.txt -output ./tests/recursive_60_0_go.jsonl -size 60 -overlap 0 -method recursive
 	cd tests && uv run ./recursive.py --size 60 --overlap 0 --input ./pg_essay.txt --output ./recursive_60_0_py.jsonl
