@@ -2,60 +2,49 @@ package chopper
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
-	"io"
 	"strings"
 
 	"github.com/mirpo/chopdoc/config"
-)
-
-const (
-	defaultBufferSize    = 1024
-	bufferSizeMultiplier = 1
 )
 
 var defaultSeparators = []string{"\n\n", "\n", " ", ".", ",", ""}
 
 type RecursiveChopper struct {
 	BaseChopper
-	bufReader *bufio.Reader
-	buffer    strings.Builder
+	buffer strings.Builder
 }
 
 func NewRecursiveChopper(cfg *config.Config, rw *bufio.ReadWriter) *RecursiveChopper {
-	bufReader := bufio.NewReaderSize(rw.Reader, defaultBufferSize)
+	scanner := bufio.NewScanner(rw.Reader)
+	scanner.Split(bufio.ScanLines)
 
 	return &RecursiveChopper{
 		BaseChopper: BaseChopper{
 			cfg:     cfg,
 			encoder: json.NewEncoder(rw.Writer),
+			scanner: scanner,
 		},
-		bufReader: bufReader,
 	}
 }
 
 func (r *RecursiveChopper) scanInput() error {
-	for {
-		chunk, err := r.bufReader.ReadBytes('\n')
-		if err != nil && err != io.EOF {
-			return err
-		}
+	for r.scanner.Scan() {
+		line := r.scanner.Text()
+		r.buffer.WriteString(line + "\n")
 
-		normalizedChunk := bytes.ReplaceAll(chunk, []byte("\r\n"), []byte("\n"))
-		r.buffer.Write(normalizedChunk)
-
-		if r.buffer.Len() >= r.cfg.ChunkSize*bufferSizeMultiplier || err == io.EOF {
+		if r.buffer.Len() >= r.cfg.ChunkSize {
 			if err := r.processBuffer(); err != nil {
 				return err
 			}
 		}
-
-		if err == io.EOF {
-			break
-		}
 	}
-	return nil
+
+	if r.buffer.Len() > 0 {
+		return r.processBuffer()
+	}
+
+	return r.scanner.Err()
 }
 
 func (r *RecursiveChopper) processBuffer() error {
