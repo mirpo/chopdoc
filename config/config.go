@@ -12,6 +12,7 @@ const (
 	Word      ChunkMethod = "word"
 	Sentence  ChunkMethod = "sentence"
 	Recursive ChunkMethod = "recursive"
+	Markdown  ChunkMethod = "markdown"
 )
 
 type CleaningMode string
