@@ -67,10 +67,6 @@ func (c *Config) Validate() error {
 	if !validMethods[c.Method] {
 		return fmt.Errorf("invalid chunking method: '%s'", c.Method)
 	}
-	if c.Method == Recursive && c.CleaningMode != CleanTrim {
-		fmt.Print("warning: set CleaningMode to None, as all line breaks are required for better recursive split.")
-		c.CleaningMode = CleanTrim
-	}
 	if c.Method == Recursive && c.Overlap != 0 {
 		fmt.Print("warning: currently Recursive split doesn't support overlap, set overlap to 0")
 		c.Overlap = 0
