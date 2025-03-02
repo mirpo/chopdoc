@@ -8,7 +8,8 @@ import (
 )
 
 type Chunk struct {
-	Text string `json:"chunk"`
+	Text     string            `json:"chunk"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 type ChopperProvider interface {

@@ -62,9 +62,7 @@ jobs:
 
       - name: Compare results
         shell: bash
-        run: |
-          make compare-recursive
-          make compare-markdown
+        run: make compare-recursive
 
       - name: Run piped
         shell: bash

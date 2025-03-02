@@ -33,6 +33,3 @@ compare-recursive:
 	go run ./chopdoc.go -input ./tests/pg_essay.txt -output ./tests/recursive_375_0_go.jsonl -size 375 -overlap 0 -method recursive -clean trim
 	cd tests && uv run ./recursive.py --size 375 --overlap 0 --input ./pg_essay.txt --output ./recursive_375_0_py.jsonl
 	cd tests && uv run ./diff.py ./recursive_375_0_py.jsonl ./recursive_375_0_go.jsonl
-
-compare-markdown:
-	@echo "compare-markdown"
