@@ -8,7 +8,8 @@ import (
 )
 
 type Chunk struct {
-	Text string `json:"chunk"`
+	Text     string            `json:"chunk"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 type ChopperProvider interface {
@@ -25,7 +26,8 @@ func NewChopper(chunkMethod config.ChunkMethod, cfg *config.Config, rw *bufio.Re
 		return NewSentenceChopper(cfg, rw), nil
 	case config.Recursive:
 		return NewRecursiveChopper(cfg, rw), nil
-	default:
-		return nil, fmt.Errorf("unsupported chunkMethod: %s", chunkMethod)
+	case config.Markdown:
+		return NewMarkdownChopper(cfg, rw), nil
 	}
+	return nil, fmt.Errorf("unsupported chunkMethod: %s", chunkMethod)
 }

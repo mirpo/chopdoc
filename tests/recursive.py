@@ -2,8 +2,6 @@ import json
 import argparse
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-SEPARATORS = ["\n\n", "\n", " ", ".", ",", ""]
-
 parser = argparse.ArgumentParser(description="Split text from input.txt and save to output.jsonl")
 parser.add_argument("--size", type=int, default=60, help="Chunk size (default 60)")
 parser.add_argument("--overlap", type=int, default=10, help="Overlap chunks (default 10)")

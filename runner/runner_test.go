@@ -1,12 +1,14 @@
 package runner
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mirpo/chopdoc/chopper"
@@ -412,6 +414,70 @@ func TestRecursive(t *testing.T) {
 			for i, want := range tt.wantChunks {
 				assert.Equal(t, want, chunks[i].Text)
 			}
+		})
+	}
+}
+
+func TestMarkdownChopper(t *testing.T) {
+	tests := []struct {
+		name       string
+		input      string
+		levels     []int
+		strip      bool
+		addMeta    bool
+		wantChunks []chopper.Chunk
+	}{
+		{
+			name:    "Basic Markdown Chunking",
+			input:   "# Header 1\nContent under header 1\n\n## Header 2\nContent under header 2\n",
+			levels:  []int{1, 2},
+			strip:   false,
+			addMeta: true,
+			wantChunks: []chopper.Chunk{
+				{Text: "# Header 1\nContent under header 1\n", Metadata: map[string]string{"Header 1": "Header 1"}},
+				{Text: "## Header 2\nContent under header 2\n", Metadata: map[string]string{"Header 1": "Header 1", "Header 2": "Header 2"}},
+			},
+		},
+		{
+			name:    "Stripping Headers",
+			input:   "# Header 1\nContent under header 1\n\n## Header 2\nContent under header 2\n",
+			levels:  []int{1, 2},
+			strip:   true,
+			addMeta: true,
+			wantChunks: []chopper.Chunk{
+				{Text: "Content under header 1\n", Metadata: map[string]string{"Header 1": "Header 1"}},
+				{Text: "Content under header 2\n", Metadata: map[string]string{"Header 1": "Header 1", "Header 2": "Header 2"}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var output bytes.Buffer
+			rw := bufio.NewReadWriter(bufio.NewReader(strings.NewReader(tt.input)), bufio.NewWriter(&output))
+
+			cfg := &config.Config{
+				MarkdownLevels: tt.levels,
+				StripHeaders:   tt.strip,
+				AddMetadata:    tt.addMeta,
+			}
+
+			markdownChopper := chopper.NewMarkdownChopper(cfg, rw)
+			err := markdownChopper.Chop()
+
+			require.NoError(t, err)
+			require.NoError(t, rw.Flush())
+
+			var gotChunks []chopper.Chunk
+			decoder := json.NewDecoder(&output)
+
+			for decoder.More() {
+				var chunk chopper.Chunk
+				require.NoError(t, decoder.Decode(&chunk))
+				gotChunks = append(gotChunks, chunk)
+			}
+
+			assert.Equal(t, tt.wantChunks, gotChunks)
 		})
 	}
 }

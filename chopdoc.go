@@ -26,6 +26,11 @@ func main() {
 	method := flag.String("method", string(config.Char), "Default chunking method: char")
 	clean := flag.String("clean", "none", "Cleaning mode: none, normal, aggressive")
 
+	// used only in markdown chopper
+	flag.StringVar(&cfg.MarkdownHeader, "headers", "1-6", "Header levels to use for markdown method (e.g. 1-6, 2-4)")
+	flag.BoolVar(&cfg.StripHeaders, "strip-headers", false, "Remove headers from content (default false, markdown method only)")
+	flag.BoolVar(&cfg.AddMetadata, "add-metadata", false, "Include header metadata in output (default false, markdown method only)")
+
 	flag.Parse()
 
 	if ver {
