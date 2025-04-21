@@ -18,7 +18,7 @@ func main() {
 	cfg := config.NewConfig()
 
 	var ver bool
-	flag.BoolVar(&ver, "version", false, "Get current version of sentences")
+	flag.BoolVar(&ver, "version", false, "Get current version of chopdoc")
 	flag.StringVar(&cfg.InputFile, "input", "", "Input file path")
 	flag.StringVar(&cfg.OutputFile, "output", "", "Output file path (must end with .jsonl)")
 	flag.IntVar(&cfg.ChunkSize, "size", 1000, "Chunk size in characters")
