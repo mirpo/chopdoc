@@ -56,6 +56,6 @@ brews:
       token: "{{ .Env.GITHUB_TOKEN }}"
     commit_author:
       name: "Miroslav Pokrovskii"
-      email: "miroslavpokrovksiy@gmail.com"
+      email: "miroslavpokrovskiy@gmail.com"
     homepage: "https://github.com/mirpo/chopdoc"
     description: "A tool to split documents into chunks for RAG and LLM applications"
