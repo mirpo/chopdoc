@@ -57,6 +57,85 @@ func TestErrorCases(t *testing.T) {
 	}
 }
 
+func TestValidatePathIntegration(t *testing.T) {
+	tmpDir := t.TempDir()
+	inputPath := filepath.Join(tmpDir, "input.txt")
+	err := os.WriteFile(inputPath, []byte("test content"), 0o644)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name       string
+		inputFile  string
+		outputFile string
+		wantErr    string
+	}{
+		{
+			name:       "valid paths",
+			inputFile:  inputPath,
+			outputFile: filepath.Join(tmpDir, "output.jsonl"),
+			wantErr:    "",
+		},
+		{
+			name:       "path traversal in input",
+			inputFile:  "../../../etc/passwd",
+			outputFile: filepath.Join(tmpDir, "output.jsonl"),
+			wantErr:    "invalid input file path: path traversal detected",
+		},
+		{
+			name:       "path traversal in output",
+			inputFile:  inputPath,
+			outputFile: "../../../tmp/malicious.jsonl",
+			wantErr:    "invalid output file path: path traversal detected",
+		},
+		{
+			name:       "nested path traversal",
+			inputFile:  "some/../../../etc/passwd",
+			outputFile: filepath.Join(tmpDir, "output.jsonl"),
+			wantErr:    "invalid input file path: path traversal detected",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := &config.Config{
+				InputFile:  tt.inputFile,
+				OutputFile: tt.outputFile,
+				ChunkSize:  10,
+				Method:     config.Char,
+			}
+
+			r := NewRunner(cfg)
+			err := r.Run()
+
+			if tt.wantErr == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestRunnerWithInvalidChopper(t *testing.T) {
+	tmpDir := t.TempDir()
+	inputPath := filepath.Join(tmpDir, "input.txt")
+	err := os.WriteFile(inputPath, []byte("test content"), 0o644)
+	require.NoError(t, err)
+
+	cfg := &config.Config{
+		InputFile:  inputPath,
+		OutputFile: filepath.Join(tmpDir, "output.jsonl"),
+		ChunkSize:  10,
+		Method:     config.ChunkMethod("invalid"), // Invalid method
+	}
+
+	r := NewRunner(cfg)
+	err = r.Run()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create chopper")
+}
+
 func TestChar(t *testing.T) {
 	tmpDir := t.TempDir()
 

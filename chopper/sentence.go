@@ -10,6 +10,8 @@ import (
 	"github.com/mirpo/chopdoc/config"
 )
 
+var endPunctuation = regexp.MustCompile(`([.!?]+)(\s*)`)
+
 type SentenceChopper struct {
 	BaseChopper
 }
@@ -32,7 +34,6 @@ func scanSentences(data []byte, atEOF bool) (advance int, token []byte, err erro
 		return 0, nil, nil
 	}
 
-	endPunctuation := regexp.MustCompile(`([.!?]+)(\s*)`)
 	loc := endPunctuation.FindSubmatchIndex(data)
 
 	if loc != nil {
@@ -48,8 +49,7 @@ func scanSentences(data []byte, atEOF bool) (advance int, token []byte, err erro
 }
 
 func (s *SentenceChopper) scanInput() error {
-	var sentences []string
-
+	sentences := make([]string, 0, s.cfg.ChunkSize+s.cfg.Overlap)
 	for s.scanner.Scan() {
 		sentences = append(sentences, s.scanner.Text())
 

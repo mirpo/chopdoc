@@ -35,4 +35,4 @@ with open(args.output, "w", encoding="utf-8") as output_file:
         json.dump(line, output_file, ensure_ascii=False, separators=(',', ':'))
         output_file.write("\n")
 
-print(f"Splitted {len(chunks)} chunks")
+print(f"Split {len(chunks)} chunks")

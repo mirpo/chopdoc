@@ -3,6 +3,7 @@ package chopper
 import (
 	"bufio"
 	"encoding/json"
+	"strings"
 
 	"github.com/mirpo/chopdoc/config"
 )
@@ -25,27 +26,30 @@ func NewCharChopper(cfg *config.Config, rw *bufio.ReadWriter) *CharChopper {
 }
 
 func (c *CharChopper) scanInput() error {
-	chunk := ""
+	var builder strings.Builder
+	builder.Grow(c.cfg.ChunkSize)
 	step := c.cfg.ChunkSize - c.cfg.Overlap
 
 	for c.scanner.Scan() {
-		chunk += c.scanner.Text()
+		builder.WriteString(c.scanner.Text())
 
-		if len(chunk) >= c.cfg.ChunkSize {
+		if builder.Len() >= c.cfg.ChunkSize {
+			chunk := builder.String()
 			if err := c.writeChunk(chunk); err != nil {
 				return err
 			}
 
 			if step > len(chunk) {
-				chunk = ""
+				builder.Reset()
 			} else {
-				chunk = chunk[step:]
+				builder.Reset()
+				builder.WriteString(chunk[step:])
 			}
 		}
 	}
 
-	if len(chunk) > 0 {
-		return c.writeChunk(chunk)
+	if builder.Len() > 0 {
+		return c.writeChunk(builder.String())
 	}
 
 	return c.scanner.Err()
