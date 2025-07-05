@@ -20,7 +20,7 @@ def compare_files(file1, file2):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python compare.py <file1> <file2>")
+        print("Usage: python diff.py <file1> <file2>")
         sys.exit(1)
     
     compare_files(sys.argv[1], sys.argv[2])

@@ -107,7 +107,7 @@ func (c *Config) Validate() error {
 	}
 
 	if c.Method == Recursive && c.Overlap != 0 {
-		fmt.Print("warning: currently Recursive chopper doesn't support overlap, setting overlap to 0")
+		fmt.Printf("warning: currently Recursive chopper doesn't support overlap, setting overlap to 0\n")
 		c.Overlap = 0
 	}
 

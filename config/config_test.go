@@ -183,6 +183,36 @@ func TestValidate(t *testing.T) {
 				AddMetadata:    true,
 			},
 		},
+		{
+			name: "invalid method type",
+			cfg: Config{
+				InputFile:  "input.txt",
+				OutputFile: "output.jsonl",
+				Method:     ChunkMethod("invalid"),
+				ChunkSize:  1000,
+			},
+			wantErr: "invalid chunking method: 'invalid'",
+		},
+		{
+			name: "empty method",
+			cfg: Config{
+				InputFile:  "input.txt",
+				OutputFile: "output.jsonl",
+				Method:     ChunkMethod(""),
+				ChunkSize:  1000,
+			},
+			wantErr: "invalid chunking method: ''",
+		},
+		{
+			name: "recursive with overlap shows warning",
+			cfg: Config{
+				InputFile:  "input.txt",
+				OutputFile: "output.jsonl",
+				Method:     Recursive,
+				ChunkSize:  100,
+				Overlap:    50,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -195,11 +225,16 @@ func TestValidate(t *testing.T) {
 			}
 
 			if tt.cfg.Method == Markdown && tt.wantErr == "" {
-				if tt.cfg.MarkdownHeader == "1-6" {
+				switch tt.cfg.MarkdownHeader {
+				case "1-6":
 					assert.Equal(t, []int{1, 2, 3, 4, 5, 6}, tt.cfg.MarkdownLevels)
-				} else if tt.cfg.MarkdownHeader == "2-4" {
+				case "2-4":
 					assert.Equal(t, []int{2, 3, 4}, tt.cfg.MarkdownLevels)
 				}
+			}
+
+			if tt.cfg.Method == Recursive && tt.wantErr == "" && tt.cfg.Overlap != 0 {
+				assert.Equal(t, 0, tt.cfg.Overlap, "Recursive method should reset overlap to 0")
 			}
 		})
 	}

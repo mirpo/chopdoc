@@ -26,7 +26,7 @@ func NewWordChopper(cfg *config.Config, rw *bufio.ReadWriter) *WordChopper {
 }
 
 func (w *WordChopper) scanInput() error {
-	var words []string
+	words := make([]string, 0, w.cfg.ChunkSize+w.cfg.Overlap)
 
 	for w.scanner.Scan() {
 		words = append(words, w.scanner.Text())

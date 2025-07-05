@@ -72,7 +72,7 @@ cat pg_essay.txt | chopdoc -size 1 -method sentence -output output_as_arg.jsonl
   -strip-headers
         Remove headers from content (default false, markdown method only)
   -version
-        Get current version of sentences
+        Get current version of chopdoc
 ```
 
 ### Output Format

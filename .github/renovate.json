@@ -13,7 +13,7 @@
         "dependencies"
     ],
     "osvVulnerabilityAlerts": true,
-    "prConcurrentLimit": 50,
+    "prConcurrentLimit": 10,
     "prHourlyLimit": 5,
     "vulnerabilityAlerts": {
         "schedule": [
@@ -21,7 +21,8 @@
         ]
     },
     "enabledManagers": [
-        "gomod"
+        "gomod",
+        "github-actions"
     ],
     "packageRules": [
         {
@@ -34,13 +35,30 @@
             "matchManagers": [
                 "gomod"
             ],
-            "groupName": "go deps"
+            "groupName": "go dependencies",
+            "automerge": false
         },
         {
             "matchManagers": [
                 "github-actions"
             ],
-            "groupName": "github actions"
+            "groupName": "github actions",
+            "automerge": false
+        },
+        {
+            "matchDepTypes": [
+                "test"
+            ],
+            "groupName": "test dependencies",
+            "automerge": false
+        },
+        {
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": false,
+            "stabilityDays": 3
         }
     ]
 }
