@@ -28,7 +28,7 @@ jobs:
 
       - name: golangci-lint
         if: runner.os != 'Windows'
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v8
         with:
           version: v2.1.2
           args: --verbose
@@ -54,7 +54,7 @@ jobs:
           Write-Host "Execution Time: $($time.TotalSeconds) seconds"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
 
       - name: Set up Python
         working-directory: ./tests
